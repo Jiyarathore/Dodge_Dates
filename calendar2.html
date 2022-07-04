@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            color: rgb(255, 255, 255);
+        }
+
+        .container {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+
+        }
+
+
+
+        .calendar {
+            height: 500px;
+            width: 500px;
+            border-radius: 50px;
+
+            box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+            padding: 15px 5px;
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            background: rgba(253, 245, 245, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 30px;
+            font-weight: 500;
+            padding: 5px;
+        }
+
+        .calendar-body {
+            padding: -22px;
+        }
+
+        .calendar-week-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+        }
+
+        .calendar-days div {
+            width: 30px;
+            height: 43px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .given-year {
+            display: flex;
+            align-items: center;
+        }
+
+        .year-change {
+            height: 91px;
+            width: 40px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            margin: 2 9px;
+        }
+
+        .year-change:hover {
+            background-color: rgb(182, 177, 182);
+        }
+
+
+
+        .active {
+            padding: 5px;
+            background-color: black;
+            color: aliceblue;
+        }
+    </style>
+</head>
+
+<body onload="calendar()">
+
+    <div class="container">
+
+        <div class="calendar">
+            <div class="calendar-header">
+                <div class="given-month" id="given-month">
+
+                </div>
+                <div class="given-year">
+                    <div class="year-change" id="prev-year">
+                        <pre><</pre>
+                    </div>
+                    <div id="year"></div>
+                    <div class="year-change" id="next-year">
+                        <pre>></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calendar-body">
+                <div class="calendar-week-days">
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thr</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                    <div>Sun</div>
+                </div>
+                <div class="calendar-days">
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div><span class="active">6</span></div>
+                    <div>7</div>
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div>6</div>
+                    <div>7</div>
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div>6</div>
+                    <div>7</div>
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div>6</div>
+                    <div>7</div>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+        <div class="month-list"></div>
+
+    </div>
+    <script>
+        let daylist = document.querySelector(".calendar-days")
+        let monthName = document.querySelector(".given-month")
+        let year = document.querySelector("#year")
+        let prev = document.querySelector("#prev-year")
+        let next = document.querySelector("#next-year")
+
+        //create date
+        let dt = new Date();
+        let month = dt.getMonth() + 1; // Because getmonth() start from 0. You may want to have d1.getMonth() + 1 to achieve it, as getMonth will give values between 0-11
+        let yr = dt.getFullYear();
+        let currentday = dt.getDate();
+
+        //array of month name
+        let monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+        //previous and next button
+        prev.addEventListener('click', event => {
+            if (month == 1) {
+                month = 12;
+                month = month - 1;
+            }
+            else {
+                month = month - 1;
+            }
+            calendar();
+        })
+
+        next.addEventListener('click', event => {
+            if (month == 12) {
+                month = 1;
+                month = month + 1;
+            }
+            else {
+                month = month + 1;
+            }
+            calendar();
+        })
+
+        //calendar function
+        const calendar = () => {
+            monthName.innerHTML = monthNames[month - 1];
+            year.innerHTML = yr;
+            daylist.innerHTML = ''
+
+            daysInMonth = new Date(yr, month, 0).getDate(); //get total no. of days in particular month
+
+            //date of new month should strt from next immediate date from when the previous month ends
+            //match pattern by adding gaps before the satarting of the day in month
+            //get day no. at which the current month start
+            //0 for sunday, 6 for saturday we are taking gaps from monday because every time every month the date starts from monday
+
+            dayNumber = new Date(yr, month - 1, 1).getDay();
+            let gaps
+            if (dayNumber === 0) {
+                gaps = 6
+            }
+            else {
+                gaps = dayNumber - 1;
+                //if dayNymber comes out to be monday then gap=1-1=0, if thrusday then gap=4-1=3
+            }
+
+            for (var day = -gaps + 1; day <= daysInMonth; day++) {
+                const days = document.createElement('div');
+                if (day <= 0) {
+                    days.innerHTML = "";
+                    daylist.appendChild(days);
+                }
+                else if (day === currentday && month === dt.getMonth() + 1 && yr === dt.getFullYear()) {
+                    //make this dae as active as it is current date i.e. today
+                    days.setAttribute('class', 'active');
+                    days.innerHTML = day;
+                    daylist.appendChild(days)
+                }
+                else {
+                    days.innerHTML = day;
+                    daylist.appendChild(days);
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
